@@ -135,17 +135,6 @@ Design Features:
 * Interactive cards
 * Immersive transitions
 
----
-
-# 📸 Preview
-
-<p align="center">
-  <img 
-    src="Screenshot 2026-05-17 132752.png"
-    width="900"
-    alt="Preview"
-  />
-</p>
 
 ---
 
