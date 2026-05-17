@@ -1,0 +1,6 @@
+{
+  "name": "AI Quiz Battle",
+  "description": "A modern mobile game with futuristic UI/UX design. Compete in AI-generated quiz battles across multiple categories including Football, IQ, Tech, Science, and more. Features leveling, rewards, and survival mode.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

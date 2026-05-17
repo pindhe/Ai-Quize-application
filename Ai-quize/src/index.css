@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Geist:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #FFFFFF;
+    --surface: #FFFFFF;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --border-light: #F1F5F9;
+  }
+
+  .dark {
+    --bg-main: #0a0a0a;
+    --surface: #171717;
+    --text-primary: #f5f5f7;
+    --text-secondary: #9ca3af;
+    --border-light: #262626;
+  }
+
+  body {
+    @apply bg-bg-main text-text-primary font-sans antialiased overflow-x-hidden;
+    min-height: 100vh;
+  }
+}
+
+@theme {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-brand-cyan: #00C2FF;
+  --color-brand-purple: #6C63FF;
+  --color-bg-main: var(--bg-main);
+  --color-surface: var(--surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-light: var(--border-light);
+  
+  --color-bauh-red: #ff3b30;
+  --color-bauh-blue: #007aff;
+  --color-bauh-green: #34c759;
+  --color-bauh-black: #1a1a1a;
+  --color-bauh-dark: #000000;
+  --color-bauh-gray: #f5f5f7;
+
+  --animate-spotlight: spotlight 2s ease .75s 1 forwards;
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%,-40%) scale(1);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-surface/70 backdrop-blur-md border border-white/10 shadow-sm;
+  }
+
+  .main-card {
+    @apply bg-surface border border-border-light rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_4px_6px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-brand-cyan text-white py-4 px-8 rounded-xl font-semibold transition-all active:scale-95 shadow-md hover:shadow-lg hover:brightness-105;
+  }
+
+  .btn-secondary {
+    @apply bg-brand-purple text-white py-4 px-8 rounded-xl font-semibold transition-all active:scale-95 shadow-md hover:shadow-lg hover:brightness-105;
+  }
+}
+
+.scanline {
+  width: 100%;
+  height: 2px;
+  background: rgba(34, 211, 238, 0.05);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100vh); }
+  100% { transform: translateY(100vh); }
+}

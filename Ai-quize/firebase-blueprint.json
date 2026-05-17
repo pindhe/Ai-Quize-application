@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account data and progression",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "xp": { "type": "integer" },
+        "level": { "type": "integer" },
+        "coins": { "type": "integer" },
+        "rank": { "type": "string" },
+        "achievements": { "type": "array", "items": { "type": "string" } },
+        "dailyStreak": { "type": "integer" },
+        "lastActive": { "type": "string", "format": "date-time" },
+        "totalWins": { "type": "integer" },
+        "totalGames": { "type": "integer" },
+        "challenges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "target": { "type": "integer" },
+              "current": { "type": "integer" },
+              "reward": { "type": "integer" },
+              "completed": { "type": "boolean" },
+              "lastGenerated": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "required": ["displayName", "xp", "level", "coins"]
+    },
+    "Question": {
+      "title": "Quiz Question",
+      "description": "An AI-generated question",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "correctIndex": { "type": "integer" },
+        "category": { "type": "string" },
+        "difficulty": { "type": "string" },
+        "explanation": { "type": "string" },
+        "source": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["text", "options", "correctIndex", "category", "difficulty"]
+    },
+    "LeaderboardEntry": {
+      "title": "Leaderboard Entry",
+      "description": "Score entry for global ranking",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "score": { "type": "integer" },
+        "rank": { "type": "integer" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "score"]
+    },
+    "Activity": {
+      "title": "Global Activity",
+      "description": "Real-time action log for the global sync network",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "type": { "type": "string", "enum": ["sync_start", "level_up", "achievement", "arena_entry"] },
+        "metadata": { "type": "object" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "displayName", "type", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and stats"
+    },
+    "questions/{questionId}": {
+      "schema": "Question",
+      "description": "AI generated questions pool"
+    },
+    "leaderboard/{entryId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Global competitive rankings"
+    },
+    "activities/{activityId}": {
+      "schema": "Activity",
+      "description": "Real-time network events"
+    }
+  }
+}

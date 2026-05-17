@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Connectivity Test
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Global Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // Validation Helpers
+    function isValidUser(data) {
+      return data.displayName is string && data.displayName.size() <= 128
+        && data.xp is int && data.xp >= 0
+        && data.level is int && data.level >= 1
+        && data.coins is int && data.coins >= 0
+        && (data.photoURL == null || (data.photoURL is string && data.photoURL.size() <= 2000))
+        && (data.get('settings', null) == null || data.settings is map);
+    }
+
+    function isValidQuestion(data) {
+      return data.text is string && data.text.size() <= 500
+        && data.options is list && data.options.size() == 4
+        && data.options[0] is string && data.options[0].size() <= 200
+        && data.correctIndex is int && data.correctIndex >= 0 && data.correctIndex <= 3
+        && data.category is string && data.category.size() <= 100
+        && data.difficulty is string && data.difficulty.size() <= 50;
+    }
+
+    function isValidLeaderboard(data) {
+       return data.userId is string && data.userId == request.auth.uid
+        && data.displayName is string && data.displayName.size() <= 128
+        && data.score is int && data.score >= 0;
+    }
+
+    function isValidActivity(data) {
+      return data.userId == request.auth.uid
+        && data.displayName is string && data.displayName.size() <= 128
+        && data.type in ['sync_start', 'level_up', 'achievement', 'arena_entry']
+        && data.timestamp == request.time;
+    }
+
+    // Collections
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isVerified() && isOwner(userId) && isValidUser(incoming());
+      allow update: if isVerified() && isOwner(userId) && isValidUser(incoming())
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'xp', 'level', 'coins', 'achievements', 'challenges', 'dailyStreak', 'lastActive', 'totalWins', 'totalGames', 'settings'])
+        );
+    }
+
+    match /questions/{questionId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow write: if false; 
+    }
+
+    match /leaderboard/{entryId} {
+      allow read: if isSignedIn();
+      allow create: if isVerified() && isValidLeaderboard(incoming()) && entryId == request.auth.uid;
+      allow update: if isVerified() && isOwner(existing().userId) && isValidLeaderboard(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly(['score', 'displayName', 'rank', 'updatedAt']);
+      allow delete: if isOwner(existing().userId);
+    }
+
+    match /activities/{activityId} {
+      allow read: if isSignedIn();
+      allow create: if isVerified() && isValidActivity(incoming());
+      allow update, delete: if false;
+    }
+  }
+}
