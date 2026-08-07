@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
+import BrandLogo from '../components/BrandLogo';
 
 export default function SettingsPage({ profile }: { profile: UserProfile | null }) {
   const navigate = useNavigate();
@@ -296,9 +297,7 @@ export default function SettingsPage({ profile }: { profile: UserProfile | null 
                         className="w-full max-w-lg p-6 relative z-10"
                     >
                         <div className="flex flex-col items-center text-center mb-12">
-                            <div className="w-16 h-16 rounded-3xl bg-brand-cyan/10 flex items-center justify-center mb-6 border border-brand-cyan/20">
-                                <Globe className="w-8 h-8 text-brand-cyan" />
-                            </div>
+                            <BrandLogo className="w-16 h-16 rounded-3xl mb-6 shadow-sm" />
                             <h4 className="text-3xl font-black text-text-primary tracking-tighter italic mb-2">{t.settings.selectInterface}</h4>
                             <p className="text-sm text-text-secondary font-medium">Select your preferred cognitive link language.</p>
                         </div>

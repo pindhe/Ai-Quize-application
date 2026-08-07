@@ -1,15 +1,13 @@
-import { StrictMode, useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, onSnapshot, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import { UserProfile } from './types';
+import { loadGuestProfile } from './lib/guestProfile';
 import './index.css';
 
-// Pages
 import SplashPage from './pages/SplashPage';
-import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CategoriesPage from './pages/CategoriesPage';
 import QuizPage from './pages/QuizPage';
@@ -23,72 +21,88 @@ import { TranslationProvider } from './lib/TranslationContext';
 import { Language } from './lib/translations';
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(() => loadGuestProfile());
   const [loading, setLoading] = useState(true);
 
   const language = (profile?.settings?.language as Language) || 'EN';
+  const activeProfile = profile ?? loadGuestProfile();
 
   useEffect(() => {
     let unsubscribeSnapshot: (() => void) | null = null;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, async (u) => {
-      // Clean up previous snapshot listener if it exists
+    const unsubscribeAuth = onAuthStateChanged(auth, async (u: User | null) => {
       if (unsubscribeSnapshot) {
         unsubscribeSnapshot();
         unsubscribeSnapshot = null;
       }
 
-      setUser(u);
       if (u) {
-        // Fetch or create profile
         const userRef = doc(db, 'users', u.uid);
-        unsubscribeSnapshot = onSnapshot(userRef, async (snap) => {
-          if (snap.exists()) {
-            setProfile({ id: u.uid, ...snap.data() } as UserProfile);
-            setLoading(false);
-          } else {
-            // Initial profile creation
-             const newProfile = {
-              displayName: u.displayName || 'Pilot_' + u.uid.slice(0, 4),
-              photoURL: u.photoURL,
-              xp: 0,
-              level: 1,
-              coins: 0,
-              rank: 'BRONZE I',
-              achievements: [],
-              dailyStreak: 1,
-              lastActive: new Date().toISOString(),
-              totalWins: 0,
-              totalGames: 0,
-              challenges: [
-                { id: 'daily_wins_1', label: 'Achieve Perfect Sync', target: 3, current: 0, reward: 50, completed: false, lastGenerated: new Date().toISOString() },
-                { id: 'daily_accuracy', label: 'Accumulate 20 Correct Answers', target: 20, current: 0, reward: 30, completed: false, lastGenerated: new Date().toISOString() }
-              ],
-              settings: {
-                audio: true,
-                notifications: true,
-                darkMode: true,
-                language: 'EN',
-                securityProtocol: 'MANDATORY'
-              }
-            };
-            try {
-              await setDoc(userRef, newProfile);
-            } catch (e) {
-              handleFirestoreError(e, OperationType.WRITE, 'users/' + u.uid);
+        unsubscribeSnapshot = onSnapshot(
+          userRef,
+          async (snap) => {
+            if (snap.exists()) {
+              setProfile({ id: u.uid, ...snap.data() } as UserProfile);
               setLoading(false);
+            } else {
+              const newProfile = {
+                displayName: u.displayName || 'Pilot_' + u.uid.slice(0, 4),
+                photoURL: u.photoURL,
+                xp: 0,
+                level: 1,
+                coins: 0,
+                rank: 'BRONZE I',
+                achievements: [],
+                dailyStreak: 1,
+                lastActive: new Date().toISOString(),
+                totalWins: 0,
+                totalGames: 0,
+                challenges: [
+                  {
+                    id: 'daily_wins_1',
+                    label: 'Achieve Perfect Sync',
+                    target: 3,
+                    current: 0,
+                    reward: 50,
+                    completed: false,
+                    lastGenerated: new Date().toISOString(),
+                  },
+                  {
+                    id: 'daily_accuracy',
+                    label: 'Accumulate 20 Correct Answers',
+                    target: 20,
+                    current: 0,
+                    reward: 30,
+                    completed: false,
+                    lastGenerated: new Date().toISOString(),
+                  },
+                ],
+                settings: {
+                  audio: true,
+                  notifications: true,
+                  darkMode: true,
+                  language: 'EN',
+                  securityProtocol: 'MANDATORY',
+                },
+              };
+              try {
+                await setDoc(userRef, newProfile);
+              } catch (e) {
+                handleFirestoreError(e, OperationType.WRITE, 'users/' + u.uid);
+                setLoading(false);
+              }
             }
+          },
+          (error) => {
+            if (auth.currentUser?.uid === u.uid) {
+              handleFirestoreError(error, OperationType.GET, 'users/' + u.uid);
+            }
+            setProfile(loadGuestProfile());
+            setLoading(false);
           }
-        }, (error) => {
-          // Only report error if we still think we are that user
-          if (auth.currentUser?.uid === u.uid) {
-            handleFirestoreError(error, OperationType.GET, 'users/' + u.uid);
-          }
-          setLoading(false);
-        });
+        );
       } else {
-        setProfile(null);
+        setProfile(loadGuestProfile());
         setLoading(false);
       }
     });
@@ -100,12 +114,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (profile?.settings?.darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [profile?.settings?.darkMode]);
+    const preferDark = activeProfile?.settings?.darkMode ?? true;
+    document.documentElement.classList.toggle('dark', preferDark);
+  }, [activeProfile?.settings?.darkMode]);
 
   return (
     <BrowserRouter>
@@ -115,17 +126,17 @@ export default function App() {
         <TranslationProvider language={language}>
           <div className="min-h-screen bg-bg-main text-text-primary selection:bg-brand-cyan/30 selection:text-brand-cyan font-sans">
             <Routes>
-              <Route path="/" element={user ? <Navigate to="/dashboard" /> : <SplashPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/dashboard" element={user ? <DashboardPage profile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/categories" element={user ? <CategoriesPage profile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/quiz" element={user ? <QuizPage profile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/rewards" element={user ? <RewardsPage /> : <Navigate to="/login" />} />
-              <Route path="/leaderboard" element={user ? <LeaderboardPage profile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/profile" element={user ? <ProfilePage currentUserProfile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/profile/:uid" element={user ? <ProfilePage currentUserProfile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/assets" element={user ? <AssetsPage profile={profile} /> : <Navigate to="/login" />} />
-              <Route path="/settings" element={user ? <SettingsPage profile={profile} /> : <Navigate to="/login" />} />
+              <Route path="/" element={<SplashPage />} />
+              <Route path="/login" element={<Navigate to="/categories" replace />} />
+              <Route path="/dashboard" element={<DashboardPage profile={activeProfile} />} />
+              <Route path="/categories" element={<CategoriesPage profile={activeProfile} />} />
+              <Route path="/quiz" element={<QuizPage profile={activeProfile} />} />
+              <Route path="/rewards" element={<RewardsPage />} />
+              <Route path="/leaderboard" element={<LeaderboardPage profile={activeProfile} />} />
+              <Route path="/profile" element={<ProfilePage currentUserProfile={activeProfile} />} />
+              <Route path="/profile/:uid" element={<ProfilePage currentUserProfile={activeProfile} />} />
+              <Route path="/assets" element={<AssetsPage profile={activeProfile} />} />
+              <Route path="/settings" element={<SettingsPage profile={activeProfile} />} />
             </Routes>
           </div>
         </TranslationProvider>

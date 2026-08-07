@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Timer, Zap, Lightbulb, BrainCircuit, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Timer, Zap, Lightbulb, CheckCircle, XCircle, ArrowLeft, Trophy } from 'lucide-react';
 import { doc, updateDoc, increment } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Question, GameState, UserProfile } from '../types';
 import { sounds } from '../lib/sounds';
 import { useTranslation } from '../lib/TranslationContext';
+import BrandLogo from '../components/BrandLogo';
+import { isGuestProfile, loadGuestProfile, saveGuestProfile } from '../lib/guestProfile';
 
 interface QuizProps {
   profile: UserProfile | null;
@@ -96,27 +98,32 @@ export default function QuizPage({ profile }: QuizProps) {
     if (timerRef.current) clearInterval(timerRef.current);
     
     try {
-      // Deduct Credits
-      const userRef = doc(db, 'users', profile.id);
-      await updateDoc(userRef, {
-        coins: increment(-10)
-      });
+      if (isGuestProfile(profile)) {
+        const next = { ...loadGuestProfile(), ...profile, coins: profile.coins - 10 };
+        saveGuestProfile(next);
+      } else {
+        const userRef = doc(db, 'users', profile.id);
+        await updateDoc(userRef, {
+          coins: increment(-10)
+        });
+      }
       
-      sounds.playWarning(); // Play tech/overclock sound
+      sounds.playWarning();
 
-      // Reveal correct answer after a short neural delay
       setTimeout(() => {
         const question = gameState.questions[gameState.currentQuestionIndex];
         setSelectedOption(question.correctIndex);
         
         setTimeout(() => {
           setIsOverclocking(false);
-          handleAnswer(question.correctIndex, true); // True flag to skip the "double answer" check
+          handleAnswer(question.correctIndex, true);
         }, 800);
       }, 500);
 
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, 'users/' + profile.id);
+      if (!isGuestProfile(profile)) {
+        handleFirestoreError(error, OperationType.UPDATE, 'users/' + profile.id);
+      }
       setIsAnswering(false);
       setIsOverclocking(false);
     }
@@ -180,9 +187,7 @@ export default function QuizPage({ profile }: QuizProps) {
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }} 
                 className="absolute inset-0 border-4 border-brand-cyan/20 border-t-brand-cyan rounded-full" 
             />
-            <div className="w-16 h-16 bg-surface border border-border-light rounded-3xl flex items-center justify-center shadow-lg transform rotate-6">
-                <NeuralCircuit className="w-8 h-8 text-brand-purple animate-pulse" />
-            </div>
+            <BrandLogo className="w-16 h-16 rounded-3xl shadow-lg" />
         </div>
         <div className="text-center space-y-2">
             <h2 className="text-xl font-bold text-text-primary tracking-tight">{t.quiz.syncing}</h2>
@@ -195,9 +200,7 @@ export default function QuizPage({ profile }: QuizProps) {
   if (error || !gameState.questions.length) {
     return (
       <div className="h-screen flex flex-col items-center justify-center p-10 space-y-8 bg-bg-main text-center">
-        <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center border-4 border-white shadow-xl">
-            <BrainCircuit className="w-10 h-10 text-rose-500" />
-        </div>
+        <BrandLogo className="w-20 h-20 rounded-3xl shadow-xl" />
         <div className="space-y-4">
             <div className="space-y-1">
                 <h2 className="text-2xl font-black text-text-primary uppercase italic tracking-tight">Sync_Interrupted</h2>
@@ -223,8 +226,8 @@ export default function QuizPage({ profile }: QuizProps) {
         <button onClick={() => navigate('/categories')} className="text-text-secondary hover:text-brand-cyan transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <div className="flex flex-col items-center">
-            <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-0.5">{t.quiz.arenaSync}</span>
+        <div className="flex flex-col items-center gap-1">
+            <BrandLogo className="h-7 w-7 rounded-lg" />
             <span className="text-sm font-bold text-text-primary tracking-tight italic">{rawCategory}</span>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-surface border border-border-light rounded-full shadow-sm">
@@ -368,26 +371,3 @@ export default function QuizPage({ profile }: QuizProps) {
     </div>
   );
 }
-
-const NeuralCircuit = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.243A3 3 0 1 0 12 19V5z"/>
-    <path d="M9 13a4.5 4.5 0 0 0 3-4"/>
-    <path d="M6.003 5.125A3 3 0 1 0 12.007 5"/>
-    <path d="M12 18.5a3 3 0 1 0 5.997-.125 4 4 0 0 0 2.526-5.77 4 4 0 0 0-.52-8.243A3 3 0 1 0 12 5v13.5z"/>
-    <path d="M15 11a4.5 4.5 0 0 0-3 4"/>
-    <path d="M17.997 18.875A3 3 0 1 0 11.993 19"/>
-  </svg>
-);
-const Trophy = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 22V18"/><path d="M14 22V18"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4Z"/></svg>
-);

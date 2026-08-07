@@ -1,10 +1,19 @@
 import { motion } from 'motion/react';
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Trophy, User, Zap, Cpu, ChevronRight, LayoutGrid, Heart, Activity, Shield, Terminal, ZapOff } from 'lucide-react';
+import {
+  Play,
+  Trophy,
+  Zap,
+  Flame,
+  Target,
+  ArrowRight,
+  CheckCircle2,
+  Settings,
+} from 'lucide-react';
 import { UserProfile } from '../types';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
+import BrandLogo from '../components/BrandLogo';
 
 interface DashboardProps {
   profile: UserProfile | null;
@@ -16,226 +25,303 @@ export default function DashboardPage({ profile }: DashboardProps) {
 
   if (!profile) return null;
 
-  const xpPercent = (profile.xp % 1000) / 10;
+  const xpIntoLevel = profile.xp % 1000;
+  const xpPercent = Math.min(100, Math.round(xpIntoLevel / 10));
+  const accuracy =
+    profile.totalGames > 0
+      ? Math.round((profile.totalWins / profile.totalGames) * 100)
+      : 0;
+  const challenges = profile.challenges || [];
+  const activeCount = challenges.filter((c) => !c.completed).length;
+
+  const challengeLabel = (id: string, fallback: string) => {
+    if (id === 'daily_wins_1') return t.dashboard.perfectSync;
+    if (id === 'daily_accuracy') return t.dashboard.accuracyChallenge;
+    return fallback;
+  };
 
   return (
-    <Layout profile={profile}>
-      <main className="p-4 sm:p-8 max-w-4xl mx-auto space-y-6 sm:space-y-8">
-        {/* Top Intelligence Overview */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Main Status Module */}
-          <div className="lg:col-span-2 main-card p-0 overflow-hidden bg-gradient-to-br from-surface to-bg-main border-2 border-border-light relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-cyan/5 blur-[100px] pointer-events-none" />
-            
-            <div className="p-5 sm:p-8 border-b border-border-light/50 flex flex-col sm:flex-row justify-between items-start gap-6">
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-brand-cyan animate-pulse shadow-[0_0_8px_#00c2ff]" />
-                  <span className="text-[9px] sm:text-[10px] font-black text-brand-cyan uppercase tracking-[0.3em] font-mono">Neural_Link_Stable</span>
-                </div>
-                <div className="space-y-1">
-                  <h2 className="text-2xl sm:text-4xl font-black text-text-primary tracking-tighter italic uppercase leading-none">{t.dashboard.activeStatus}</h2>
-                  <p className="text-[11px] sm:text-xs text-text-secondary font-medium tracking-tight max-w-sm">System performance at peak synchronization. Cognitive bandwidth optimal.</p>
-                </div>
-              </div>
-              <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto border-t sm:border-t-0 border-border-light/30 pt-4 sm:pt-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-bg-main border border-border-light flex items-center justify-center text-brand-purple sm:mb-2">
-                  <Activity className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div className="text-right flex flex-col items-end">
-                  <span className="text-[9px] font-black text-text-secondary uppercase tracking-widest font-mono">Uptime</span>
-                  <span className="text-lg sm:text-xl font-black text-text-primary italic font-mono">{profile.dailyStreak}d</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 sm:p-8 bg-surface/30 backdrop-blur-sm grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-              <div className="space-y-1">
-                <span className="text-[8px] sm:text-[9px] font-bold text-text-secondary uppercase tracking-widest block">Accuracy</span>
-                <p className="text-base sm:text-lg font-black text-text-primary font-mono tracking-tighter">98.4%</p>
-              </div>
-              <div className="space-y-1">
-                <span className="text-[8px] sm:text-[9px] font-bold text-text-secondary uppercase tracking-widest block">Latency</span>
-                <p className="text-base sm:text-lg font-black text-text-primary font-mono tracking-tighter">12ms</p>
-              </div>
-              <div className="col-span-2 space-y-1.5 sm:space-y-1">
-                <div className="flex justify-between items-end mb-1">
-                  <span className="text-[8px] sm:text-[9px] font-bold text-text-secondary uppercase tracking-widest">Level Progress</span>
-                  <span className="text-[9px] sm:text-[10px] font-black text-brand-purple font-mono">{xpPercent}%</span>
-                </div>
-                <div className="h-1.5 w-full bg-bg-main rounded-full overflow-hidden border border-border-light p-0.5">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${xpPercent}%` }}
-                    className="h-full bg-gradient-to-r from-brand-cyan to-brand-purple rounded-full shadow-[0_0_10px_rgba(0,194,255,0.4)]"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Stats Sidebar */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            <div className="main-card p-6 bg-text-primary text-white space-y-4 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 scale-150 rotate-12 transition-transform group-hover:rotate-0">
-                <Zap className="w-20 h-20 fill-white" />
-              </div>
-              <div className="relative z-10 space-y-4">
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] font-mono">Current_Balance</span>
-                <div className="space-y-0.5">
-                  <p className="text-3xl sm:text-4xl font-black italic tracking-tighter">{profile.coins.toLocaleString()}</p>
-                  <p className="text-[10px] text-brand-cyan font-bold uppercase tracking-widest">+1,240 Today</p>
-                </div>
-                <button 
-                  onClick={() => navigate('/rewards')}
-                  className="w-full py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all"
-                >
-                  Exchange Credits
-                </button>
-              </div>
-            </div>
-
-            <div className="main-card p-5 border border-dashed border-border-light flex items-center justify-between group hover:border-brand-cyan transition-colors h-full">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand-cyan/10 flex items-center justify-center text-brand-cyan group-hover:bg-brand-cyan group-hover:text-white transition-all">
-                  <Trophy className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-[11px] sm:text-xs font-black text-text-primary uppercase tracking-tight">Global Rank</p>
-                  <p className="text-[9px] sm:text-[10px] text-text-secondary font-bold font-mono">#024 / 1.2k</p>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-text-secondary opacity-30 group-hover:opacity-100 transition-opacity" />
-            </div>
-          </div>
-        </section>
-
-        {/* Primary Action Zone */}
-        <section className="relative px-2 sm:px-0">
-          <div className="absolute inset-0 bg-brand-cyan/20 blur-[80px] sm:blur-[120px] rounded-full opacity-40" />
-          <motion.button 
-            whileHover={{ scale: 1.01, translateY: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => navigate('/categories')}
-            className="w-full bg-surface border-2 sm:border-4 border-text-primary rounded-[2rem] sm:rounded-[3rem] p-1.5 flex items-center justify-between shadow-2xl relative z-10 group"
+    <Layout profile={profile} videoBackground>
+      <div className="mx-auto max-w-5xl space-y-8 px-4 py-6 sm:space-y-10 sm:px-8 sm:py-10">
+        {/* Hero */}
+        <section className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
           >
-            <div className="flex-1 flex items-center gap-4 sm:gap-8 pl-6 sm:pl-10 h-20 sm:h-24">
-              <div className="hidden md:flex flex-col items-start gap-1">
-                <div className="flex gap-1">
-                  {[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 bg-brand-cyan/20 rounded-full" />)}
-                </div>
-                <span className="text-[8px] font-black text-text-secondary uppercase tracking-[0.4em] font-mono leading-none">Ready_To_Sync</span>
-              </div>
-              
-              <div className="text-left flex flex-col justify-center">
-                <span className="text-text-primary text-xl sm:text-3xl font-black tracking-tighter italic uppercase leading-none mb-1 group-hover:text-brand-cyan transition-colors">Initiate Brain Sync</span>
-                <span className="text-[9px] sm:text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em]">{t.dashboard.title} Protocol v4.2</span>
+            <div className="flex items-center gap-3">
+              <BrandLogo className="h-14 w-14 rounded-2xl shadow-md sm:h-16 sm:w-16" />
+              <div>
+                <p className="font-display text-sm font-semibold tracking-wide text-brand-cyan">
+                  NeuroCore
+                </p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-text-secondary">
+                  {t.dashboard.welcome}
+                </p>
               </div>
             </div>
 
-            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] bg-text-primary flex items-center justify-center shadow-lg group-hover:bg-brand-cyan transition-all">
-              <Play className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white fill-white translate-x-0.5 sm:translate-x-1" />
+            <div>
+              <h1 className="font-display text-4xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-5xl">
+                Welcome back,{' '}
+                <span className="text-brand-cyan">
+                  {profile.displayName.split(' ')[0]}
+                </span>
+              </h1>
+              <p className="mt-3 max-w-md text-sm leading-relaxed text-text-secondary sm:text-base">
+                Level {profile.level} · {profile.rank}. Jump into a quiz battle or track today’s objectives.
+              </p>
             </div>
+          </motion.div>
+
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.08 }}
+            onClick={() => navigate('/categories')}
+            className="group inline-flex h-14 shrink-0 items-center gap-3 bg-brand-cyan px-7 font-display text-base font-semibold text-[#0B1424] transition-[filter,transform] hover:brightness-110 active:scale-[0.98]"
+          >
+            <Play className="h-5 w-5 fill-current" />
+            Play Arena
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </motion.button>
         </section>
 
-        {/* Information Grid */}
-        <section className="grid grid-cols-1 lg:grid-cols-1 gap-6 pb-12">
-          {/* Active Challenges Module */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center px-2">
-              <div className="flex items-center gap-2">
-                <LayoutGrid className="w-4 h-4 text-brand-purple" />
-                <h3 className="text-[11px] sm:text-xs font-black text-text-primary uppercase tracking-[0.2em] italic">{t.dashboard.challenges}</h3>
+        {/* Stats strip */}
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+        >
+          {[
+            {
+              label: t.dashboard.level,
+              value: String(profile.level),
+              icon: Target,
+              hint: profile.rank,
+            },
+            {
+              label: t.dashboard.xp,
+              value: profile.xp.toLocaleString(),
+              icon: Zap,
+              hint: `${xpPercent}% to next`,
+            },
+            {
+              label: 'Coins',
+              value: profile.coins.toLocaleString(),
+              icon: Zap,
+              hint: 'Spend in battle',
+            },
+            {
+              label: t.dashboard.dailyStreak,
+              value: `${profile.dailyStreak}d`,
+              icon: Flame,
+              hint: 'Keep it going',
+            },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="border border-border-light bg-surface/55 p-4 backdrop-blur-md sm:p-5"
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <stat.icon className="h-4 w-4 text-brand-cyan" />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-text-secondary">
+                  {stat.hint}
+                </span>
               </div>
-              <span className="text-[8px] sm:text-[9px] font-bold text-text-secondary uppercase tracking-widest bg-surface px-2 py-0.5 rounded border border-border-light font-mono">2_Active</span>
+              <p className="font-display text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+                {stat.value}
+              </p>
+              <p className="mt-1 text-xs font-medium text-text-secondary">{stat.label}</p>
             </div>
-            
-            <div className="space-y-3">
-              {(profile.challenges || []).map((challenge) => (
-                <div key={challenge.id} className="main-card p-4 sm:p-5 group flex items-center gap-4 hover:border-brand-purple transition-all relative overflow-hidden">
-                  {challenge.completed && (
-                    <div className="absolute top-0 right-0 w-10 sm:w-12 h-10 sm:h-12 bg-bauh-green/10 flex items-center justify-center rounded-bl-2xl sm:rounded-bl-3xl">
-                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-bauh-green fill-bauh-green" />
-                    </div>
-                  )}
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all ${challenge.completed ? 'bg-bauh-green/10 text-bauh-green' : 'bg-bg-main border border-border-light text-text-secondary group-hover:text-brand-purple'}`}>
-                    <Cpu className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <div className="flex-1 space-y-1.5 sm:space-y-2">
-                    <div className="flex justify-between items-start pr-8">
-                       <p className="text-[10px] sm:text-xs font-black text-text-primary italic tracking-tight uppercase leading-tight">
-                         {challenge.id === 'daily_wins_1' ? t.dashboard.perfectSync : challenge.id === 'daily_accuracy' ? t.dashboard.accuracyChallenge : challenge.label}
-                       </p>
-                       <span className="text-[9px] sm:text-[10px] font-black text-amber-500 font-mono tracking-tighter">+{challenge.reward}</span>
-                    </div>
-                    
-                    <div className="space-y-1 sm:space-y-1.5">
-                       <div className="flex justify-between text-[7px] sm:text-[8px] font-black text-text-secondary uppercase tracking-widest font-mono">
-                          <span>Progress</span>
-                          <span>{challenge.current} / {challenge.target}</span>
-                       </div>
-                       <div className="h-1 w-full bg-bg-main rounded-full overflow-hidden">
-                          <motion.div 
-                            className={`h-full rounded-full transition-all duration-1000 ${challenge.completed ? 'bg-bauh-green' : 'bg-brand-purple'}`}
-                            style={{ width: `${Math.min(100, (challenge.current / challenge.target) * 100)}%` }}
-                          />
-                       </div>
-                    </div>
-                  </div>
+          ))}
+        </motion.section>
+
+        {/* Progress + quick links */}
+        <section className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:gap-5">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.16 }}
+            className="border border-border-light bg-surface/55 p-5 backdrop-blur-md sm:p-6 lg:col-span-3"
+          >
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-display text-xl font-bold tracking-tight text-text-primary">
+                  Level progress
+                </h2>
+                <p className="mt-1 text-sm text-text-secondary">
+                  {xpIntoLevel} / 1000 XP toward level {profile.level + 1}
+                </p>
+              </div>
+              <span className="font-mono text-sm font-bold text-brand-cyan">{xpPercent}%</span>
+            </div>
+
+            <div className="h-2 w-full overflow-hidden bg-bg-main/80">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${xpPercent}%` }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="h-full bg-brand-cyan"
+              />
+            </div>
+
+            <div className="mt-6 grid grid-cols-3 gap-3 border-t border-border-light pt-5">
+              <div>
+                <p className="font-display text-lg font-bold text-text-primary">{accuracy}%</p>
+                <p className="text-[11px] text-text-secondary">Win rate</p>
+              </div>
+              <div>
+                <p className="font-display text-lg font-bold text-text-primary">{profile.totalGames}</p>
+                <p className="text-[11px] text-text-secondary">Games played</p>
+              </div>
+              <div>
+                <p className="font-display text-lg font-bold text-text-primary">{profile.totalWins}</p>
+                <p className="text-[11px] text-text-secondary">Perfect runs</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-col gap-3 lg:col-span-2"
+          >
+            <button
+              type="button"
+              onClick={() => navigate('/leaderboard')}
+              className="group flex flex-1 items-center justify-between border border-border-light bg-surface/55 p-5 text-left backdrop-blur-md transition-colors hover:border-brand-cyan/50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center bg-brand-cyan/15 text-brand-cyan">
+                  <Trophy className="h-5 w-5" />
                 </div>
-              ))}
-            </div>
-          </div>
+                <div>
+                  <p className="font-display text-base font-semibold text-text-primary">Rankings</p>
+                  <p className="text-xs text-text-secondary">See global standings</p>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-text-secondary transition-transform group-hover:translate-x-0.5 group-hover:text-brand-cyan" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/profile')}
+              className="group flex flex-1 items-center justify-between border border-border-light bg-surface/55 p-5 text-left backdrop-blur-md transition-colors hover:border-brand-cyan/50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center overflow-hidden bg-bg-main">
+                  <img
+                    src={
+                      profile.photoURL ||
+                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`
+                    }
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="font-display text-base font-semibold text-text-primary">Your stats</p>
+                  <p className="text-xs text-text-secondary">{profile.rank}</p>
+                </div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-text-secondary transition-transform group-hover:translate-x-0.5 group-hover:text-brand-cyan" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              className="group flex items-center justify-between border border-border-light bg-surface/55 px-5 py-4 text-left backdrop-blur-md transition-colors hover:border-brand-cyan/50"
+            >
+              <div className="flex items-center gap-3">
+                <Settings className="h-4 w-4 text-text-secondary" />
+                <span className="font-display text-sm font-medium text-text-primary">Settings</span>
+              </div>
+              <ArrowRight className="h-4 w-4 text-text-secondary transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </motion.div>
         </section>
 
-        {/* System Logs / Network Status */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-border-light pt-8 pb-12">
-          <div className="space-y-4">
-             <div className="flex items-center gap-2 px-2">
-                <Terminal className="w-4 h-4 text-brand-cyan" />
-                <h3 className="text-[11px] sm:text-xs font-black text-text-primary uppercase tracking-[0.2em] italic">System Metrics</h3>
-             </div>
-             
-             <div className="main-card p-5 sm:p-6 bg-surface/50 border-2 border-dashed border-border-light flex flex-col gap-5 sm:gap-6">
-                <div className="flex items-center justify-between border-b border-border-light pb-4">
-                   <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                         <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        {/* Challenges */}
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.24 }}
+          className="space-y-4"
+        >
+          <div className="flex items-center justify-between px-0.5">
+            <h2 className="font-display text-xl font-bold tracking-tight text-text-primary">
+              {t.dashboard.challenges}
+            </h2>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-text-secondary">
+              {activeCount} active
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {challenges.length === 0 ? (
+              <div className="border border-dashed border-border-light bg-surface/40 px-5 py-10 text-center backdrop-blur-md">
+                <p className="text-sm text-text-secondary">No objectives yet — play a match to unlock daily goals.</p>
+              </div>
+            ) : (
+              challenges.map((challenge) => {
+                const progress = Math.min(
+                  100,
+                  Math.round((challenge.current / challenge.target) * 100)
+                );
+                return (
+                  <div
+                    key={challenge.id}
+                    className="border border-border-light bg-surface/55 p-4 backdrop-blur-md sm:p-5"
+                  >
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center ${
+                            challenge.completed
+                              ? 'bg-emerald-500/15 text-emerald-500'
+                              : 'bg-brand-cyan/15 text-brand-cyan'
+                          }`}
+                        >
+                          {challenge.completed ? (
+                            <CheckCircle2 className="h-4 w-4" />
+                          ) : (
+                            <Target className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-display text-sm font-semibold text-text-primary sm:text-base">
+                            {challengeLabel(challenge.id, challenge.label)}
+                          </p>
+                          <p className="mt-0.5 font-mono text-[11px] text-text-secondary">
+                            {challenge.current} / {challenge.target}
+                          </p>
+                        </div>
                       </div>
-                      <span className="text-[9px] sm:text-[10px] font-black text-text-primary uppercase tracking-widest">Neural Encryption</span>
-                   </div>
-                   <span className="text-[8px] sm:text-[9px] font-black text-emerald-500 font-mono italic">ACTIVE_SECURE</span>
-                </div>
-
-                <div className="space-y-3 sm:space-y-4">
-                   <div className="flex items-center justify-between">
-                      <span className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em]">Synapse Latency</span>
-                      <div className="text-[9px] sm:text-[10px] font-bold text-brand-cyan font-mono">0.002ms</div>
-                   </div>
-                   <div className="flex items-center justify-between">
-                      <span className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em]">Packet Drop Rate</span>
-                      <div className="text-[9px] sm:text-[10px] font-bold text-brand-purple font-mono">0.00%</div>
-                   </div>
-                   <div className="flex items-center justify-between">
-                      <span className="text-[9px] sm:text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em]">Core Temperature</span>
-                      <div className="text-[9px] sm:text-[10px] font-bold text-amber-500 font-mono">36.5°C</div>
-                   </div>
-                </div>
-
-                <div className="pt-2">
-                   <button 
-                    onClick={() => navigate('/settings')}
-                    className="flex items-center gap-2 text-[8px] font-black text-text-secondary uppercase tracking-[0.3em] hover:text-brand-cyan transition-colors"
-                   >
-                      <ZapOff className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                      De-Synchronize Node
-                   </button>
-                </div>
-             </div>
+                      <span className="shrink-0 font-mono text-xs font-bold text-amber-500">
+                        +{challenge.reward}
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden bg-bg-main/80">
+                      <div
+                        className={`h-full transition-all duration-500 ${
+                          challenge.completed ? 'bg-emerald-500' : 'bg-brand-cyan'
+                        }`}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
-        </section>
-      </main>
+        </motion.section>
+      </div>
     </Layout>
   );
 }

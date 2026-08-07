@@ -6,6 +6,7 @@ import { doc, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from '../firebase';
 import { sounds } from '../lib/sounds';
 import { useTranslation } from '../lib/TranslationContext';
+import { loadGuestProfile, saveGuestProfile } from '../lib/guestProfile';
 
 export default function RewardsPage() {
   const navigate = useNavigate();
@@ -19,18 +20,47 @@ export default function RewardsPage() {
       setResults(JSON.parse(data));
       sounds.playLevelUp();
     } else {
-      navigate('/dashboard');
+      navigate('/categories');
     }
   }, []);
 
   const handleClaim = async () => {
-    if (!auth.currentUser || claimed) return;
+    if (claimed || !results) return;
     setClaimed(true);
 
     const xpReward = results.score;
     const coinsReward = Math.floor(results.score / 10);
 
     try {
+      if (!auth.currentUser) {
+        const guest = loadGuestProfile();
+        const challenges = (guest.challenges || []).map((c) => {
+          if (c.completed) return c;
+          let newCurrent = c.current;
+          if (c.id === 'daily_wins_1' && results.correctCount === results.totalQuestions) {
+            newCurrent += 1;
+          }
+          if (c.id === 'daily_accuracy') {
+            newCurrent += results.correctCount;
+          }
+          return { ...c, current: newCurrent, completed: newCurrent >= c.target };
+        });
+        saveGuestProfile({
+          ...guest,
+          xp: guest.xp + xpReward,
+          coins: guest.coins + coinsReward,
+          totalGames: guest.totalGames + 1,
+          totalWins:
+            guest.totalWins + (results.correctCount === results.totalQuestions ? 1 : 0),
+          level: Math.floor((guest.xp + xpReward) / 1000) + 1,
+          lastActive: new Date().toISOString(),
+          challenges,
+        });
+        sessionStorage.removeItem('lastGameResults');
+        navigate('/categories');
+        return;
+      }
+
       const userRef = doc(db, 'users', auth.currentUser.uid);
       const dataDoc = await getDoc(userRef);
       let challenges = dataDoc.data()?.challenges || [];
@@ -59,9 +89,12 @@ export default function RewardsPage() {
         challenges
       });
 
-      navigate('/dashboard');
+      sessionStorage.removeItem('lastGameResults');
+      navigate('/categories');
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, 'users/' + auth.currentUser.uid);
+      if (auth.currentUser) {
+        handleFirestoreError(error, OperationType.UPDATE, 'users/' + auth.currentUser.uid);
+      }
       setClaimed(false);
     }
   };

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ChevronLeft, LogOut, Grid, Trophy, Cpu, Zap, Wallet, BarChart3, Settings, Moon, ShieldCheck, Heart, ArrowRight } from 'lucide-react';
+import { ChevronLeft, LogOut, Grid, Trophy, Zap, BarChart3, Settings, ShieldCheck } from 'lucide-react';
 import { auth, db, handleFirestoreError, OperationType } from '../firebase';
 import { UserProfile } from '../types';
 import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
+import BrandLogo from '../components/BrandLogo';
 
 interface ProfileProps {
   currentUserProfile: UserProfile | null;
@@ -41,16 +42,15 @@ export default function ProfilePage({ currentUserProfile }: ProfileProps) {
   }, [uid, currentUserProfile]);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-bg-main">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg-main">
+        <BrandLogo className="h-16 w-16 rounded-2xl" />
         <div className="w-8 h-8 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   if (!profile) return (
     <div className="min-h-screen bg-bg-main flex flex-col items-center justify-center p-10 text-center gap-6">
-        <div className="w-20 h-20 bg-surface border border-border-light rounded-[2rem] flex items-center justify-center shadow-sm">
-            <Cpu className="w-10 h-10 text-text-secondary opacity-20" />
-        </div>
+        <BrandLogo className="w-20 h-20 rounded-[2rem] shadow-sm opacity-80" />
         <div className="space-y-2">
             <h2 className="text-xl font-bold text-text-primary italic tracking-tight">{t.profile.notLocated}</h2>
             <p className="text-sm text-text-secondary font-medium">{t.profile.notLocatedDesc}</p>
@@ -63,7 +63,7 @@ export default function ProfilePage({ currentUserProfile }: ProfileProps) {
 
   const handleSignOut = () => {
     auth.signOut();
-    navigate('/login');
+    navigate('/');
   };
 
   const stats = [
@@ -130,8 +130,8 @@ export default function ProfilePage({ currentUserProfile }: ProfileProps) {
 
         {/* Core Stats Overview */}
         <section className="main-card p-8 group overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-                <BrainCircuit className="w-32 h-32 text-brand-cyan" />
+            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform pointer-events-none">
+                <BrandLogo className="w-28 h-28 rounded-2xl" />
             </div>
             <div className="flex justify-between items-end mb-6 relative z-10">
                 <div className="space-y-1">
@@ -214,23 +214,3 @@ export default function ProfilePage({ currentUserProfile }: ProfileProps) {
     </Layout>
   );
 }
-
-const BrainCircuit = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.243A3 3 0 1 0 12 19V5z"/>
-    <path d="M9 13a4.5 4.5 0 0 0 3-4"/>
-    <path d="M6.003 5.125A3 3 0 1 0 12.007 5"/>
-    <path d="M12 18.5a3 3 0 1 0 5.997-.125 4 4 0 0 0 2.526-5.77 4 4 0 0 0-.52-8.243A3 3 0 1 0 12 5v13.5z"/>
-    <path d="M15 11a4.5 4.5 0 0 0-3 4"/>
-    <path d="M17.997 18.875A3 3 0 1 0 11.993 19"/>
-  </svg>
-);
