@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import BrandLogo from '../components/BrandLogo';
+import BrandMark from '../components/BrandMark';
 import { useIsDark } from '../hooks/useIsDark';
+import { BRAND_FULL } from '../lib/brand';
 import heroVideo from '../images/motionvibe_pindown.io_1786103963.mp4';
 
 export default function SplashPage() {
@@ -41,29 +42,27 @@ export default function SplashPage() {
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="mb-6"
+            className="mb-4"
           >
-            <BrandLogo className="h-28 w-28 sm:h-36 sm:w-36 md:h-40 md:w-40 rounded-3xl shadow-lg" />
+            <BrandMark
+              stacked
+              align="start"
+              size="xl"
+              showTagline
+              tone={isDark ? 'onDark' : 'onLight'}
+              logoClassName="h-28 w-28 rounded-3xl shadow-lg sm:h-36 sm:w-36 md:h-40 md:w-40"
+            />
           </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut', delay: 0.08 }}
-            className="font-display text-[clamp(3.5rem,14vw,7.5rem)] font-bold leading-[0.9] tracking-tight"
-          >
-            NeuroCore
-          </motion.p>
 
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.16, ease: 'easeOut' }}
-            className={`mt-5 max-w-xl font-display text-[clamp(1.35rem,3.6vw,2rem)] font-medium leading-snug tracking-tight ${
+            className={`mt-6 max-w-xl font-display text-[clamp(1.35rem,3.6vw,2rem)] font-medium leading-snug tracking-tight ${
               isDark ? 'text-white/90' : 'text-[#1A1523]/90'
             }`}
           >
-            AI quiz battles that sharpen your edge.
+            AI brain tests that sharpen your edge.
           </motion.h1>
 
           <motion.p
@@ -85,14 +84,14 @@ export default function SplashPage() {
           >
             <button
               type="button"
-              onClick={() => navigate('/categories')}
+              onClick={() => navigate('/dashboard')}
               className={`group inline-flex h-14 items-center gap-3 px-8 font-display text-base font-semibold transition-[filter,transform] hover:brightness-110 active:scale-[0.98] ${
                 isDark
                   ? 'bg-brand-cyan text-[#0B1424]'
                   : 'bg-[#1A1523] text-[#FFF8EF]'
               }`}
             >
-              Next · Arena
+              Go Dashboard
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </button>
 
@@ -101,7 +100,7 @@ export default function SplashPage() {
                 isDark ? 'text-white/35' : 'text-[#1A1523]/40'
               }`}
             >
-              Neural Dynamics · 2026
+              {BRAND_FULL} · 2026
             </span>
           </motion.div>
         </div>

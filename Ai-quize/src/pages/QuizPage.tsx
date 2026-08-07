@@ -8,6 +8,8 @@ import { Question, GameState, UserProfile } from '../types';
 import { sounds } from '../lib/sounds';
 import { useTranslation } from '../lib/TranslationContext';
 import BrandLogo from '../components/BrandLogo';
+import BrandMark from '../components/BrandMark';
+import { BRAND_NAME } from '../lib/brand';
 import { isGuestProfile, loadGuestProfile, saveGuestProfile } from '../lib/guestProfile';
 
 interface QuizProps {
@@ -190,6 +192,7 @@ export default function QuizPage({ profile }: QuizProps) {
             <BrandLogo className="w-16 h-16 rounded-3xl shadow-lg" />
         </div>
         <div className="text-center space-y-2">
+            <p className="font-display text-lg font-bold text-text-primary">{BRAND_NAME}</p>
             <h2 className="text-xl font-bold text-text-primary tracking-tight">{t.quiz.syncing}</h2>
             <p className="text-sm text-text-secondary font-medium">{t.quiz.downloading.replace('{category}', rawCategory)}</p>
         </div>
@@ -200,7 +203,12 @@ export default function QuizPage({ profile }: QuizProps) {
   if (error || !gameState.questions.length) {
     return (
       <div className="h-screen flex flex-col items-center justify-center p-10 space-y-8 bg-bg-main text-center">
-        <BrandLogo className="w-20 h-20 rounded-3xl shadow-xl" />
+        <BrandMark
+          stacked
+          size="md"
+          showTagline
+          logoClassName="w-20 h-20 rounded-3xl shadow-xl"
+        />
         <div className="space-y-4">
             <div className="space-y-1">
                 <h2 className="text-2xl font-black text-text-primary uppercase italic tracking-tight">Sync_Interrupted</h2>
@@ -226,9 +234,9 @@ export default function QuizPage({ profile }: QuizProps) {
         <button onClick={() => navigate('/categories')} className="text-text-secondary hover:text-brand-cyan transition-colors">
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <div className="flex flex-col items-center gap-1">
-            <BrandLogo className="h-7 w-7 rounded-lg" />
-            <span className="text-sm font-bold text-text-primary tracking-tight italic">{rawCategory}</span>
+        <div className="flex flex-col items-center gap-0.5">
+            <BrandMark logoClassName="h-7 w-7 rounded-lg" size="sm" showTagline={false} />
+            <span className="text-xs font-bold text-text-secondary tracking-tight">{rawCategory}</span>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-surface border border-border-light rounded-full shadow-sm">
            <Trophy className="w-3 h-3 text-amber-500" />

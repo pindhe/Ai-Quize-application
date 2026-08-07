@@ -39,7 +39,7 @@ export default function Layout({
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header profile={profile} title={title} showProfile={showProfile} />
-        <main className="flex-grow pb-32">{children}</main>
+        <main className="flex-grow pb-32 md:pb-8">{children}</main>
         <Navigation />
       </div>
     </div>

@@ -1,42 +1,49 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Zap, Trophy, User, Wallet } from 'lucide-react';
-import { useTranslation } from '../lib/TranslationContext';
+import { Home, Zap } from 'lucide-react';
+import BrandMark from './BrandMark';
 
+/** Mobile-only footer: brand + Core / Arena icon buttons. */
 export default function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
 
-  const navItems = [
-    { id: 'dashboard', icon: Home, label: 'Core', path: '/dashboard' },
-    { id: 'arena', icon: Zap, label: 'Arena', path: '/categories' },
-    { id: 'leaderboard', icon: Trophy, label: 'Rankings', path: '/leaderboard' },
-    { id: 'profile', icon: User, label: 'Stats', path: '/profile' },
+  const links = [
+    { label: 'Core', path: '/dashboard', icon: Home },
+    { label: 'Arena', path: '/categories', icon: Zap },
   ];
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-lg z-50 glass-panel rounded-[2rem] h-20 flex justify-around items-center px-4 shadow-2xl border border-white/20">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.path;
-        return (
-          <button 
-            key={item.id} 
-            onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center gap-1.5 transition-all relative flex-1 ${isActive ? 'text-brand-cyan scale-110' : 'text-text-secondary hover:text-text-primary'}`}
-          >
-            {isActive && (
-              <div className="absolute -top-10 w-12 h-12 bg-brand-cyan/20 blur-xl rounded-full" />
-            )}
-            <item.icon className={`w-6 h-6 transition-transform ${isActive ? 'fill-brand-cyan/10 drop-shadow-[0_0_8px_rgba(0,194,255,0.4)]' : ''}`} />
-            <span className={`text-[9px] font-black tracking-widest uppercase transition-all ${isActive ? 'opacity-100 mt-0.5' : 'opacity-60'}`}>
-              {item.label}
-            </span>
-            {isActive && (
-              <div className="absolute -bottom-2 w-1 h-1 bg-brand-cyan rounded-full shadow-[0_0_5px_#00c2ff]" />
-            )}
-          </button>
-        );
-      })}
+    <nav className="fixed bottom-6 left-1/2 z-50 flex h-14 w-[92%] max-w-md -translate-x-1/2 items-center justify-between gap-2 rounded-full border border-white/15 bg-surface/70 px-3 shadow-xl backdrop-blur-xl md:hidden">
+      <BrandMark
+        logoClassName="h-8 w-8 shrink-0 rounded-lg"
+        size="sm"
+        showTagline={false}
+        className="min-w-0 flex-1 overflow-hidden"
+        onClick={() => navigate('/')}
+      />
+
+      <div className="flex shrink-0 items-center gap-1">
+        {links.map((link) => {
+          const active = location.pathname === link.path;
+          const Icon = link.icon;
+          return (
+            <button
+              key={link.path}
+              type="button"
+              onClick={() => navigate(link.path)}
+              aria-label={link.label}
+              title={link.label}
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                active
+                  ? 'bg-brand-cyan text-[#0B1424]'
+                  : 'text-text-secondary hover:bg-white/10 hover:text-text-primary'
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }

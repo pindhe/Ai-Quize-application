@@ -9,7 +9,7 @@ interface SplineSceneProps {
 export const SplineScene = ({ scene, className }: SplineSceneProps) => {
   return (
     <div className={className}>
-      <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white opacity-20 uppercase tracking-widest text-xs">Initializing Neural Core...</div>}>
+      <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white opacity-20 uppercase tracking-widest text-xs">Loading Pindhe AI...</div>}>
         <Spline scene={scene} />
       </Suspense>
     </div>

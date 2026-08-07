@@ -1,6 +1,7 @@
 import logoLight from '../images/logo-light.jpg';
 import logoDark from '../images/logo-dark.png';
 import { useIsDark } from '../hooks/useIsDark';
+import { BRAND_FULL } from '../lib/brand';
 
 interface BrandLogoProps {
   className?: string;
@@ -16,7 +17,7 @@ interface BrandLogoProps {
  */
 export default function BrandLogo({
   className = 'h-10 w-10',
-  alt = 'NeuroCore',
+  alt = BRAND_FULL,
   variant,
 }: BrandLogoProps) {
   const isDark = useIsDark();

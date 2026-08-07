@@ -3,7 +3,7 @@ export type Language = 'EN' | 'JP' | 'DE' | 'SO';
 export const translations: Record<Language, any> = {
   EN: {
     dashboard: {
-      title: 'Neural Core',
+      title: 'Pindhe AI',
       welcome: 'Active Connection',
       level: 'Level',
       xp: 'Total XP',

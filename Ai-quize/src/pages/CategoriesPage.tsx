@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Category, Difficulty, UserProfile } from '../types';
 import Layout from '../components/Layout';
-import BrandLogo from '../components/BrandLogo';
+import BrandMark from '../components/BrandMark';
 
 interface CategoriesProps {
   profile: UserProfile | null;
@@ -138,17 +138,11 @@ export default function CategoriesPage({ profile }: CategoriesProps) {
             transition={{ duration: 0.5 }}
             className="space-y-4"
           >
-            <div className="flex items-center gap-3">
-              <BrandLogo className="h-14 w-14 rounded-2xl shadow-md sm:h-16 sm:w-16" />
-              <div>
-                <p className="font-display text-sm font-semibold tracking-wide text-brand-cyan">
-                  NeuroCore Arena
-                </p>
-                <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-text-secondary">
-                  Pick a realm · Play now
-                </p>
-              </div>
-            </div>
+            <BrandMark
+              logoClassName="h-14 w-14 rounded-2xl shadow-md sm:h-16 sm:w-16"
+              size="md"
+              showTagline
+            />
 
             <h1 className="max-w-xl font-display text-4xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-5xl md:text-6xl">
               Choose your realm

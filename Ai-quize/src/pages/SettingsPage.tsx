@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Bell, Shield, Smartphone, Globe, Info, Volume2, Moon, Sliders, CheckCircle, AlertTriangle, User, Hash, Edit2, X } from 'lucide-react';
+import { ChevronLeft, Bell, Shield, Smartphone, Globe, Info, Volume2, Sliders, CheckCircle, AlertTriangle, User, Hash, Edit2, X } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { UserProfile } from '../types';
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
-import BrandLogo from '../components/BrandLogo';
+import BrandMark from '../components/BrandMark';
 
 export default function SettingsPage({ profile }: { profile: UserProfile | null }) {
   const navigate = useNavigate();
@@ -128,15 +128,6 @@ export default function SettingsPage({ profile }: { profile: UserProfile | null 
           type: 'toggle',
           active: currentSettings.audio,
           onClick: () => handleToggle('audio', currentSettings.audio)
-        },
-        { 
-          id: 'darkMode',
-          label: t.settings.darkMode, 
-          icon: Moon, 
-          value: currentSettings.darkMode ? 'FORCED' : 'LIGHT_CORE', 
-          type: 'toggle',
-          active: currentSettings.darkMode,
-          onClick: () => handleToggle('darkMode', currentSettings.darkMode)
         },
         { 
           id: 'notifications',
@@ -297,7 +288,7 @@ export default function SettingsPage({ profile }: { profile: UserProfile | null 
                         className="w-full max-w-lg p-6 relative z-10"
                     >
                         <div className="flex flex-col items-center text-center mb-12">
-                            <BrandLogo className="w-16 h-16 rounded-3xl mb-6 shadow-sm" />
+                            <BrandMark stacked size="md" logoClassName="w-16 h-16 rounded-3xl shadow-sm mb-2" className="mb-6" />
                             <h4 className="text-3xl font-black text-text-primary tracking-tighter italic mb-2">{t.settings.selectInterface}</h4>
                             <p className="text-sm text-text-secondary font-medium">Select your preferred cognitive link language.</p>
                         </div>
