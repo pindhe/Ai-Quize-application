@@ -15,19 +15,13 @@ function base({ size = 20, className, ...rest }: IconProps) {
   };
 }
 
-/** Stacked question cards — quiz progress */
+/** Question card mark — quiz progress */
 export function QuestionStackIcon(props: IconProps) {
   return (
     <svg {...base(props)}>
-      <rect x="5" y="4" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.75" />
-      <path d="M9 9.5h6M9 13h4" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-      <circle cx="17.5" cy="6.5" r="3.25" fill="currentColor" className="text-brand-cyan" />
-      <path
-        d="M17.5 5.2v.2M17.5 7.8v.2"
-        stroke="#0B1424"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
+      <rect x="4.5" y="3.5" width="15" height="17" rx="2.5" stroke="currentColor" strokeWidth="1.75" />
+      <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M12 13.2v1.6M12 17.2h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }

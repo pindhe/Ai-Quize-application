@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 import type { Category } from '../../types';
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
@@ -113,7 +113,7 @@ export function IslamicIcon(props: IconProps) {
   );
 }
 
-const MAP: Record<Category, (p: IconProps) => JSX.Element> = {
+const MAP: Record<Category, (p: IconProps) => ReactElement> = {
   IQ: IqIcon,
   Math: MathIcon,
   Science: ScienceIcon,

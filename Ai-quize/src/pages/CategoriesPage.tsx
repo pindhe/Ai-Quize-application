@@ -1,22 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Globe,
-  Terminal,
-  Atom,
-  Shield,
-  Film,
-  Calculator,
-  ArrowRight,
-  Brain,
-  BookOpen,
-  Play,
-} from 'lucide-react';
+import { ArrowRight, Play } from 'lucide-react';
 import { Category, Difficulty, UserProfile } from '../types';
 import Layout from '../components/Layout';
 import BrandMark from '../components/BrandMark';
 import { BRAND_FULL } from '../lib/brand';
+import { CategoryIcon } from '../components/icons/CategoryIcons';
 
 interface CategoriesProps {
   profile: UserProfile | null;
@@ -33,56 +23,15 @@ const GAMES: {
   id: Category;
   title: string;
   blurb: string;
-  icon: typeof Brain;
 }[] = [
-  {
-    id: 'IQ',
-    title: 'IQ & Caqli',
-    blurb: 'Qaabab, xujooyin iyo fikir',
-    icon: Brain,
-  },
-  {
-    id: 'Math',
-    title: 'Xisaabta',
-    blurb: 'Tirooyin cadaadis ah',
-    icon: Calculator,
-  },
-  {
-    id: 'Science',
-    title: 'Sayniska',
-    blurb: 'Atam, cirka iyo sahamin',
-    icon: Atom,
-  },
-  {
-    id: 'Technology',
-    title: 'Tiknoolajiyadda',
-    blurb: 'Code, chips iyo cloud',
-    icon: Terminal,
-  },
-  {
-    id: 'Football',
-    title: 'Kubadda Cagta',
-    blurb: 'Naadiyo, koobab iyo halyey',
-    icon: Globe,
-  },
-  {
-    id: 'Movies',
-    title: 'Filimada',
-    blurb: 'Filimada iyo TV-ga',
-    icon: Film,
-  },
-  {
-    id: 'Somalia',
-    title: 'Soomaaliya',
-    blurb: 'Dhaqan, taariikh iyo meelo',
-    icon: Shield,
-  },
-  {
-    id: 'Islamic Knowledge',
-    title: 'Aqoonta Islaamka',
-    blurb: 'Diin, taariikh iyo dhaqan',
-    icon: BookOpen,
-  },
+  { id: 'IQ', title: 'IQ & Caqli', blurb: 'Qaabab, xujooyin iyo fikir' },
+  { id: 'Math', title: 'Xisaabta', blurb: 'Tirooyin cadaadis ah' },
+  { id: 'Science', title: 'Sayniska', blurb: 'Atam, cirka iyo sahamin' },
+  { id: 'Technology', title: 'Tiknoolajiyadda', blurb: 'Code, chips iyo cloud' },
+  { id: 'Football', title: 'Kubadda Cagta', blurb: 'Naadiyo, koobab iyo halyey' },
+  { id: 'Movies', title: 'Filimada', blurb: 'Filimada iyo TV-ga' },
+  { id: 'Somalia', title: 'Soomaaliya', blurb: 'Dhaqan, taariikh iyo meelo' },
+  { id: 'Islamic Knowledge', title: 'Aqoonta Islaamka', blurb: 'Diin, taariikh iyo dhaqan' },
 ];
 
 export default function CategoriesPage({ profile }: CategoriesProps) {
@@ -120,7 +69,7 @@ export default function CategoriesPage({ profile }: CategoriesProps) {
               Dooro ciyaar
             </h1>
             <p className="max-w-md text-sm leading-relaxed text-text-secondary sm:text-base">
-              Dooro tijaabada maskaxda oo riix Ciyaar — AI waxay kuu samaysaa 5 su&apos;aalood oo waqti leh.
+              Dooro tijaabada maskaxda oo riix Ciyaar — AI waxay kuu samaysaa 10 su&apos;aalood oo waqti leh.
             </p>
           </div>
         </motion.div>
@@ -165,7 +114,7 @@ export default function CategoriesPage({ profile }: CategoriesProps) {
               className="flex items-center gap-3 border border-border-light bg-surface/55 p-3 backdrop-blur-md sm:gap-4 sm:p-4"
             >
               <div className="flex h-14 w-14 shrink-0 items-center justify-center border border-border-light bg-bg-main/60 text-brand-cyan sm:h-16 sm:w-16">
-                <game.icon className="h-7 w-7" />
+                <CategoryIcon category={game.id} size={28} />
               </div>
 
               <div className="min-w-0 flex-1">

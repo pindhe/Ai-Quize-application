@@ -445,7 +445,7 @@ export const translations: Record<Language, any> = {
       },
     categories: {
         title: 'Dooro ciyaar',
-        subtitle: 'Dooro tijaabada maskaxda oo riix Ciyaar — AI waxay kuu samaysaa 5 su\'aalood.',
+        subtitle: 'Dooro tijaabada maskaxda oo riix Ciyaar — AI waxay kuu samaysaa 10 su\'aalood.',
         searchPlaceholder: 'Raadi mawduuc...',
         stability: 'Degganaanshaha',
         readyToSync: 'Diyaar u ah',
