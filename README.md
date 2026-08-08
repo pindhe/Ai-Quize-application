@@ -1,161 +1,155 @@
-# 🧠 AI Quiz Application
+# Pindhe AI — Tijaabada Maskaxda
 
-A modern futuristic AI-powered quiz platform built using **TypeScript** and **Firebase**.
-Experience immersive learning with real-time quiz systems, smooth animations, intelligent scoring, and a premium cyberpunk-inspired UI.
+AI-powered brain quiz app with a Somali-first UI. Play timed rounds across IQ, Math, Science, Technology, Football, Movies, Somalia, and Islamic Knowledge. Earn XP and credits as you go.
+
+**Live:** [https://aiquize.onrender.com/](https://aiquize.onrender.com/)
 
 <p align="center">
-  <img 
-    src="Screenshot 2026-05-17 132752.png" 
+  <img
+    src="Screenshot 2026-05-17 132752.png"
     width="850"
-    alt="AI Quiz Application Preview"
-    style="border-radius:18px; box-shadow:0 10px 35px rgba(0,0,0,0.35);"
+    alt="Pindhe AI preview"
   />
 </p>
 
 ---
 
-# ✨ Features
+## Features
 
-* ⚡ Modern AI-inspired UI/UX
-* 🧠 Smart Quiz Experience
-* 🔥 Firebase Authentication
-* ☁️ Firestore Database Integration
-* 📊 Real-time Score Tracking
-* 🎯 Dynamic Quiz Levels
-* 🪄 Smooth Framer Motion Animations
-* 🌌 Futuristic Cyberpunk Design
-* 📱 Fully Responsive Layout
-* 🔐 Secure User Authentication
-* 🚀 Fast Performance with TypeScript
+- 10 AI-generated questions per game (Gemini), randomized each run
+- Categories + difficulty (Fudud → Khubaro)
+- Timed answers, 50/50 hint, and quick-help lifeline
+- Guest profile (local) — no Google login required
+- XP, credits, rewards, leaderboard, and settings
+- Somali UI copy + Somali quiz generation
+- Dark/light theme support
 
 ---
 
-# 🛠️ Tech Stack
+## Tech stack
 
-## Frontend
+| Layer | Stack |
+| --- | --- |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS, Motion |
+| Backend | Express (`server.ts`) + Gemini API (`@google/genai`) |
+| Data | Firebase / Firestore (optional online profile & leaderboard) |
+| Hosting | Render (`https://aiquize.onrender.com/`) |
 
-* TypeScript
-* React
-* Tailwind CSS
-* Framer Motion
-
-## Backend & Database
-
-* Firebase Authentication
-* Cloud Firestore
-* Firebase Hosting
+App source lives in the `Ai-quize/` folder.
 
 ---
 
-# 📂 Project Structure
+## Project structure
 
-```bash
-src/
-│
-├── components/
-│   ├── ui/
-│   ├── quiz/
-│   └── layout/
-│
-├── pages/
-│
-├── firebase/
-│
-├── hooks/
-│
-├── utils/
-│
-├── assets/
-│
-└── App.tsx
+```text
+Ai-Quize/
+├── Ai-quize/
+│   ├── server.ts          # Express + /api/quiz/generate
+│   ├── src/
+│   │   ├── components/    # Brand, loading, icons, layout
+│   │   ├── pages/         # Splash, Categories, Quiz, Rewards…
+│   │   ├── lib/           # brand, guest profile, translations
+│   │   └── images/        # logo, loader SVG, hero video
+│   ├── .env.example
+│   └── package.json
+├── Screenshot 2026-05-17 132752.png
+└── README.md
 ```
 
 ---
 
-# 🚀 Installation
+## Run locally
 
-Clone the repository:
-
-```bash
-git clone https://github.com/your-username/Ai-Quize-application.git
-```
-
-Navigate into the project:
+**Prerequisites:** Node.js 20+
 
 ```bash
-cd Ai-Quize-application
-```
-
-Install dependencies:
-
-```bash
+cd Ai-quize
 npm install
 ```
 
-Start development server:
+Create `.env.local` from the example:
+
+```bash
+# Ai-quize/.env.local
+GEMINI_API_KEY=your_key_here
+APP_URL=http://localhost:3000
+```
+
+Get a free key: [Google AI Studio](https://aistudio.google.com/apikey)
+
+Start the app:
 
 ```bash
 npm run dev
 ```
 
----
+Open [http://localhost:3000](http://localhost:3000).
 
-# 🔥 Firebase Setup
+### Production build (local)
 
-Create a Firebase project and add your configuration:
-
-```ts
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+```bash
+npm run build
+npm start
 ```
 
 ---
 
-# 🎨 UI/UX Design
+## Deploy (Render)
 
-The interface is inspired by:
+This app needs a **Node** host (Express serves the API + SPA).
 
-* OpenAI
-* Apple Vision Pro
-* Cyberpunk aesthetics
-* Futuristic AI dashboards
-* Glassmorphism interfaces
+1. Push the repo to GitHub.
+2. Create a **Web Service** on [Render](https://render.com).
+3. Settings:
+   - **Root Directory:** `Ai-quize`
+   - **Build Command:** `npm install && npm run build`
+   - **Start Command:** `npm start`
+4. Environment variables:
+   - `GEMINI_API_KEY` — required
+   - `NODE_ENV=production`
+   - `APP_URL=https://aiquize.onrender.com` (or your service URL)
+5. Deploy, then open the public URL.
 
-Design Features:
-
-* Neon cyan & purple gradients
-* Animated backgrounds
-* Floating glow effects
-* Interactive cards
-* Immersive transitions
-
-
----
-
-# 🌍 Future Improvements
-
-* 🤖 AI-generated quiz questions
-* 🏆 Multiplayer quiz battles
-* 🎤 Voice AI assistant
-* 📈 Advanced analytics dashboard
-* 🌐 Online leaderboard
-* 🧩 Custom quiz builder
-* 🪐 3D interactive experiences
+Do **not** commit `.env.local` or real API keys.
 
 ---
 
-# 👨‍💻 Author
+## Quiz API
 
-Developed with ❤️ using TypeScript + Firebase.
+`POST /api/quiz/generate`
+
+```json
+{
+  "category": "IQ",
+  "difficulty": "Medium",
+  "count": 10,
+  "language": "Soomaali",
+  "seed": "optional-unique-seed"
+}
+```
+
+Each request uses a seed + shuffling so replays return a different question mix and answer order.
 
 ---
 
-# 📄 License
+## Scripts
 
-This project is licensed under the MIT License.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Dev server (Vite + Express) on port 3000 |
+| `npm run build` | Build client + bundle `dist/server.cjs` |
+| `npm start` | Run production server |
+| `npm run lint` | Typecheck (`tsc --noEmit`) |
+
+---
+
+## Notes
+
+- Free-tier Gemini quotas apply; if generation fails with a rate-limit message, wait and retry.
+- Guest mode stores progress in `localStorage`; Firebase is used when available for online features.
+
+---
+
+## License
+
+MIT
