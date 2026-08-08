@@ -6,6 +6,7 @@ import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
+import LoadingScreen from '../components/LoadingScreen';
 import { UserProfile } from '../types';
 
 interface LeaderboardEntry {
@@ -89,14 +90,7 @@ export default function LeaderboardPage({ profile }: LeaderboardProps) {
         </div>
 
         {loading ? (
-            <div className="flex flex-col items-center justify-center p-20 space-y-4">
-                <motion.div 
-                    animate={{ rotate: 360 }} 
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="w-8 h-8 border-2 border-brand-cyan border-t-transparent rounded-full" 
-                />
-                <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">{t.leaderboard.loading}</p>
-            </div>
+            <LoadingScreen compact />
         ) : (
             <div className="space-y-8">
                 {/* Podium for top 3 */}

@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react';
+import { LoadingDots } from '../LoadingScreen';
 const Spline = lazy(() => import('@splinetool/react-spline'));
 
 interface SplineSceneProps {
@@ -9,7 +10,13 @@ interface SplineSceneProps {
 export const SplineScene = ({ scene, className }: SplineSceneProps) => {
   return (
     <div className={className}>
-      <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white opacity-20 uppercase tracking-widest text-xs">Loading Pindhe AI...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex h-full w-full items-center justify-center">
+            <LoadingDots size="lg" className="opacity-90" />
+          </div>
+        }
+      >
         <Spline scene={scene} />
       </Suspense>
     </div>

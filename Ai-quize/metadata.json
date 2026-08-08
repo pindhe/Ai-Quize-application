@@ -1,6 +1,6 @@
 {
-  "name": "Pindhe AI Brain Test",
-  "description": "Pindhe AI Brain Test — AI-generated quiz battles across IQ, tech, science, and more. Level up, earn rewards, and stay sharp.",
+  "name": "Pindhe AI Tijaabada Maskaxda",
+  "description": "Pindhe AI — Tijaabooyin maskaxeed oo AI ah. IQ, tiknoolajiyad, saynis iyo wax kale. Hel XP oo kor u qaado darajadaada.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

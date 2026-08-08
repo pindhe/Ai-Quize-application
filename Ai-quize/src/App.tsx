@@ -8,8 +8,8 @@ import { loadGuestProfile } from './lib/guestProfile';
 import './index.css';
 
 import SplashPage from './pages/SplashPage';
-import DashboardPage from './pages/DashboardPage';
 import CategoriesPage from './pages/CategoriesPage';
+import LoadingScreen from './components/LoadingScreen';
 import QuizPage from './pages/QuizPage';
 import RewardsPage from './pages/RewardsPage';
 import LeaderboardPage from './pages/LeaderboardPage';
@@ -24,7 +24,7 @@ export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(() => loadGuestProfile());
   const [loading, setLoading] = useState(true);
 
-  const language = (profile?.settings?.language as Language) || 'EN';
+  const language = (profile?.settings?.language as Language) || 'SO';
   const activeProfile = profile ?? loadGuestProfile();
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function App() {
                   audio: true,
                   notifications: true,
                   darkMode: true,
-                  language: 'EN',
+                  language: 'SO',
                   securityProtocol: 'MANDATORY',
                 },
               };
@@ -121,14 +121,14 @@ export default function App() {
   return (
     <BrowserRouter>
       {loading ? (
-        <SplashPage />
+        <LoadingScreen />
       ) : (
         <TranslationProvider language={language}>
           <div className="min-h-screen bg-bg-main text-text-primary selection:bg-brand-cyan/30 selection:text-brand-cyan font-sans">
             <Routes>
               <Route path="/" element={<SplashPage />} />
               <Route path="/login" element={<Navigate to="/categories" replace />} />
-              <Route path="/dashboard" element={<DashboardPage profile={activeProfile} />} />
+              <Route path="/dashboard" element={<Navigate to="/categories" replace />} />
               <Route path="/categories" element={<CategoriesPage profile={activeProfile} />} />
               <Route path="/quiz" element={<QuizPage profile={activeProfile} />} />
               <Route path="/rewards" element={<RewardsPage />} />

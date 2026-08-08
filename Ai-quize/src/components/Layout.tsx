@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import Header from './Header';
-import Navigation from './Navigation';
 import { UserProfile } from '../types';
 import heroVideo from '../images/motionvibe_pindown.io_1786103963.mp4';
 
@@ -39,8 +38,7 @@ export default function Layout({
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <Header profile={profile} title={title} showProfile={showProfile} />
-        <main className="flex-grow pb-32 md:pb-8">{children}</main>
-        <Navigation />
+        <main className="flex-grow pb-8">{children}</main>
       </div>
     </div>
   );

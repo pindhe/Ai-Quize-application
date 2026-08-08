@@ -62,7 +62,7 @@ export default function SplashPage() {
               isDark ? 'text-white/90' : 'text-[#1A1523]/90'
             }`}
           >
-            AI brain tests that sharpen your edge.
+            Tijaabooyin maskaxeed oo AI ah oo kugu fiiqan.
           </motion.h1>
 
           <motion.p
@@ -73,7 +73,7 @@ export default function SplashPage() {
               isDark ? 'text-white/55' : 'text-[#1A1523]/55'
             }`}
           >
-            Face AI-generated rounds across IQ, tech, science, and more — earn XP, climb ranks, stay sharp.
+            La tartan su&apos;aalo AI ah oo ku saabsan IQ, tiknoolajiyad, saynis iyo wax kale — hel XP, kor u qaado darajadaada.
           </motion.p>
 
           <motion.div
@@ -84,14 +84,14 @@ export default function SplashPage() {
           >
             <button
               type="button"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/categories')}
               className={`group inline-flex h-14 items-center gap-3 px-8 font-display text-base font-semibold transition-[filter,transform] hover:brightness-110 active:scale-[0.98] ${
                 isDark
                   ? 'bg-brand-cyan text-[#0B1424]'
                   : 'bg-[#1A1523] text-[#FFF8EF]'
               }`}
             >
-              Go Dashboard
+              Xiga Arena
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </button>
 

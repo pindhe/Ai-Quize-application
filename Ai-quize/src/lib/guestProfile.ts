@@ -40,7 +40,7 @@ export function createGuestProfile(): UserProfile {
       audio: true,
       notifications: true,
       darkMode: true,
-      language: 'EN',
+      language: 'SO',
       securityProtocol: 'MANDATORY',
     },
   };
@@ -50,7 +50,18 @@ export function loadGuestProfile(): UserProfile {
   try {
     const raw = localStorage.getItem(GUEST_KEY);
     if (raw) {
-      return { ...createGuestProfile(), ...JSON.parse(raw), id: 'guest-local' };
+      const parsed = JSON.parse(raw) as UserProfile;
+      const base = createGuestProfile();
+      return {
+        ...base,
+        ...parsed,
+        id: 'guest-local',
+        settings: {
+          ...base.settings!,
+          ...parsed.settings,
+          language: 'SO',
+        },
+      };
     }
   } catch {
     /* ignore */

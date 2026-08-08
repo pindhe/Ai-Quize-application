@@ -7,6 +7,7 @@ import { auth, db, handleFirestoreError, OperationType } from '../firebase';
 import { sounds } from '../lib/sounds';
 import { useTranslation } from '../lib/TranslationContext';
 import { loadGuestProfile, saveGuestProfile } from '../lib/guestProfile';
+import { LoadingDots } from '../components/LoadingScreen';
 
 export default function RewardsPage() {
   const navigate = useNavigate();
@@ -200,7 +201,7 @@ export default function RewardsPage() {
                 className="btn-primary w-full h-16 flex items-center justify-center gap-3 disabled:opacity-50"
             >
                 {claimed ? (
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="w-6 h-6 border-2 border-white border-t-transparent rounded-full" />
+                    <LoadingDots size="md" className="brightness-200" />
                 ) : (
                     <>
                         <span className="text-sm font-bold uppercase tracking-widest">{t.rewards.claim}</span>

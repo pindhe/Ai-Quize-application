@@ -8,6 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
 import BrandMark from '../components/BrandMark';
+import LoadingScreen from '../components/LoadingScreen';
 
 interface ProfileProps {
   currentUserProfile: UserProfile | null;
@@ -41,12 +42,11 @@ export default function ProfilePage({ currentUserProfile }: ProfileProps) {
     }
   }, [uid, currentUserProfile]);
 
-  if (loading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-bg-main">
-        <BrandMark stacked size="md" logoClassName="h-16 w-16 rounded-2xl" />
-        <div className="w-8 h-8 border-2 border-brand-cyan border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <LoadingScreen />
+    );
+  }
 
   if (!profile) return (
     <div className="min-h-screen bg-bg-main flex flex-col items-center justify-center p-10 text-center gap-6">

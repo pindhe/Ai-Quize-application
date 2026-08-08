@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useTranslation } from '../lib/TranslationContext';
 import Layout from '../components/Layout';
 import BrandMark from '../components/BrandMark';
+import { LoadingDots } from '../components/LoadingScreen';
 
 export default function SettingsPage({ profile }: { profile: UserProfile | null }) {
   const navigate = useNavigate();
@@ -232,11 +233,7 @@ export default function SettingsPage({ profile }: { profile: UserProfile | null 
                             
                             <div className="flex items-center gap-3">
                                 {updating === item.id ? (
-                                    <motion.div 
-                                        animate={{ rotate: 360 }}
-                                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                        className="w-4 h-4 border-2 border-brand-cyan border-t-transparent rounded-full"
-                                    />
+                                    <LoadingDots size="sm" />
                                 ) : (
                                     <div className="flex flex-col items-end">
                                         <span className={`text-[10px] font-black uppercase tracking-[0.1em] transition-colors ${
@@ -377,7 +374,7 @@ export default function SettingsPage({ profile }: { profile: UserProfile | null 
                                 className="btn-primary w-full h-14 flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 {updating === 'name' ? (
-                                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                                    <LoadingDots size="sm" className="brightness-200" />
                                 ) : (
                                     <>
                                         <span className="text-xs font-bold uppercase tracking-widest">{t.settings.updateSegment}</span>
